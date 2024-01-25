@@ -76,6 +76,54 @@ If this flag is empty, Secrets from all namespaces will be used.
 The `--selector` flag accepts a [label selector][5] that can be
 used to further restrict which Secrets the `htpasswd` backend will consume.
 
+# bearer
+
+Usage:
+
+```
+Run a bearer authentication server
+
+Usage:
+  contour-authserver bearer [OPTIONS]
+
+Flags:
+      --address string             The address the authentication endpoint binds to. (default ":9090")
+      --auth-realm string          Bearer authentication realm. (default "default")
+  -h, --help                       help for bearer
+      --metrics-address string     The address the metrics endpoint binds to. (default ":8080")
+      --selector string            Selector (label-query) to filter Secrets, supports '=', '==', and '!='.
+      --tls-ca-path string         Path to the TLS CA certificate bundle.
+      --tls-cert-path string       Path to the TLS server certificate.
+      --tls-key-path string        Path to the TLS server key.
+      --watch-namespaces strings   The list of namespaces to watch for Secrets.
+```
+
+## bearer Secrets
+
+The `bearer` backend implements bearer token authentication
+against a set of Secrets that contain bearer formatted data.
+The bearer token must be stored in the `auth` key.
+
+The `bearer` backend only accesses Secrets that are
+annotated with `projectcontour.io/auth-type: bearer`.
+
+Secrets that are annotated with the `projectcontour.io/auth-realm`
+will only be used if the annotation value matches the value of the
+`--auth-realm` flag.
+The `projectcontour.io/auth-realm: *` annotation explicitly marks
+a Secret as being valid for all realms.
+This is equivalent to omitting the annotation.
+
+When it authenticates a request, the `bearer` backend injects the `Auth-Realm` headers, 
+which contain the authentication realm respectively.
+
+The `--watch-namespaces` flag specifies the namespaces where the
+`bearer` backend will discover Secrets.
+If this flag is empty, Secrets from all namespaces will be used.
+
+The `--selector` flag accepts a [label selector][5] that can be
+used to further restrict which Secrets the `bearer` backend will consume.
+
 # oidc
 
 Usage:
